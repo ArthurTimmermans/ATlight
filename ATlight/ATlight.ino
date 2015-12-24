@@ -1,3 +1,6 @@
+#include <LCD.h>
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
 
   // Pins
   int ledRed = 3;
@@ -8,10 +11,30 @@
   int butMid = 8;
   int butDown = 9;
 
+  // LCD setup
+  #define I2C_ADDR 0x27
+  #define BACKLIGHT_PIN  3
+  #define En_pin 2
+  #define Rw_pin 1
+  #define Rs_pin 0
+  #define D4_pin 4
+  #define D5_pin 5
+  #define D6_pin 6
+  #define D7_pin 7
+
+  LiquidCrystal_I2C  lcd(I2C_ADDR, En_pin, Rw_pin, Rs_pin, D4_pin, D5_pin, D6_pin, D7_pin);
   
 void setup(){ 
 
   Serial.begin(9600);
+
+  lcd.begin(16,2); // LCD setup 16x2
+
+  lcd.setBacklightPin(BACKLIGHT_PIN, POSITIVE);
+  lcd.setBacklight(HIGH);
+  lcd.home();
+
+  lcd.print("Initializing...");
 
   pinMode(ledRed, OUTPUT);
   pinMode(ledGreen, OUTPUT);
@@ -40,4 +63,12 @@ void setup(){
 }
 
 void loop(){
+
+  if(digitalRead(butDown) == HIGH){
+    Serial.println("Jep");
+  }
+
+
+
+  
 }
