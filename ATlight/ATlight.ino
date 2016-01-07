@@ -3,9 +3,8 @@
 #include <LiquidCrystal_I2C.h>
 
   // Pins
-  int ledRed = 3;
-  int ledGreen = 5;
-  int ledBlue = 6;
+  int ledRed = 22;
+  int ledGreen =23;
 
   int butUp = 7;
   int butMid = 8;
@@ -23,11 +22,15 @@
   #define D7_pin 7
 
   LiquidCrystal_I2C  lcd(I2C_ADDR, En_pin, Rw_pin, Rs_pin, D4_pin, D5_pin, D6_pin, D7_pin);
+
+  int menuItem = 0;
+
+  char listItem;
   
 void setup(){ 
 
   Serial.begin(9600);
-
+  
   lcd.begin(16,2); // LCD setup 16x2
 
   lcd.setBacklightPin(BACKLIGHT_PIN, POSITIVE);
@@ -35,19 +38,14 @@ void setup(){
   lcd.home();
 
   lcd.print("Initializing...");
-
   pinMode(ledRed, OUTPUT);
   pinMode(ledGreen, OUTPUT);
-  pinMode(ledBlue, OUTPUT);
 
   pinMode(butUp, INPUT);
   pinMode(butMid, INPUT);
   pinMode(butDown, INPUT);
 
-  for(int x = 0; x <= 255; x++){
-    analogWrite(ledRed, x);
-    delay(4);
-  }
+  digitalWrite(ledRed, HIGH);
 
   for(int y = 1; y <= 6; y++){
     if(y%2 == 0){
@@ -59,15 +57,27 @@ void setup(){
   }
 
   digitalWrite(ledGreen, HIGH);
-  
+
+  lcd.clear();
+}
+
+void menu(){
+
+  switch(menuItem){
+    case 0:
+      menuItem++;
+      //menuName = "Addressing";
+      break;
+  }
+  lcd.print("Home");
+  lcd.setCursor(0,1);
+  lcd.print("> Addressing");
+  lcd.home();
 }
 
 void loop(){
 
-  if(digitalRead(butDown) == HIGH){
-    Serial.println("Jep");
-  }
-
+menu();
 
 
   
