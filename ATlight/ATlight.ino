@@ -6,11 +6,15 @@
   int ledRed = 22;
   int ledGreen =23;
 
+  int butBack = 27;
   int butUp = 26;
-  int butMid = 25;
+  int butOk = 25;
   int butDown = 24;
 
   int mode = 0;
+  int sub = 0;
+
+  int dmxStart = 1; 
   
   int menuLevel = 0;
   
@@ -19,6 +23,9 @@
 
   int menuDownLast = 0;
   int menuDownState = 0;
+
+  int menuOkLast = 0;
+  int menuOkState = 0;
 
   // LCD setup
   #define I2C_ADDR 0x27
@@ -52,8 +59,9 @@ void setup(){
   pinMode(ledGreen, OUTPUT);
 
   pinMode(butUp, INPUT);
-  pinMode(butMid, INPUT);
+  pinMode(butOk, INPUT);
   pinMode(butDown, INPUT);
+  pinMode(butBack, INPUT);
 
   digitalWrite(ledRed, HIGH);
 
@@ -72,26 +80,29 @@ void setup(){
 }
 
 void menu(){
-  lcd.print("Home");
-  lcd.setCursor(0,1);
   if(mode == 0){
+    lcd.print("Home");
+    lcd.setCursor(0,1);
     switch(menuLevel){
       case 0:
         lcd.print("> ADDRESSING");
-        if(digitalRead(butMid) == HIGH){
+        if(digitalRead(butOk) == HIGH){
           mode = 1;
+          delay(50);
         }
         break;
       case 1:
-        lcd.print("> SETTINGS");
-        if(digitalRead(butMid) == HIGH){
+        lcd.print("> PROGRAMS");
+        if(digitalRead(butOk) == HIGH){
           mode = 2;
+          delay(50);
         }
         break;
       case 2:
-        lcd.print("> SHUTDOWN");
-        if(digitalRead(butMid) == HIGH){
+        lcd.print("> SETTINGS");
+        if(digitalRead(butOk) == HIGH){
           mode = 3;
+          delay(50);
         }
         break;
       default:
@@ -101,20 +112,49 @@ void menu(){
           menuLevel = 0;
         }
     }
-
-    switch(mode){
-      case 1:
-        lcd.print("test");
-        break;
-    }
   }
-  
+  switch(mode){
+    case 1:
+      lcd.print("ADDRESSING");
+      lcd.setCursor(0,1);
+        lcd.print("DMX START: ");
+        lcd.print(dmxStart);
+        if(digitalRead(butUp) == HIGH || digitalRead(butDown) == HIGH){
+          lcd.clear();
+          lcd.print("ADDRESSING");
+          lcd.setCursor(0,1);
+          lcd.print("DMX START: ");
+          if(digitalRead(butUp) == HIGH){
+            lcd.print(dmxStart++);
+            delay(300);
+          }else if(digitalRead(butDown) == HIGH){
+            lcd.print(dmxStart--);
+            delay(300);
+          }
+        }
+        break;
+    case 2:
+      lcd.print("PROGRAMS");
+      lcd.setCursor(0,1);
+      lcd.print("NO PROGRAMS");
+      break;
+    case 3:
+      lcd.print("SETTINGS");
+      lcd.setCursor(0,1);
+      lcd.print("NO SETTINGS");
+    }
+    if(digitalRead(butBack) == HIGH){
+      mode = 0;
+      menuLevel = 0;
+      lcd.clear();
+    }
+    
   lcd.home();
 }
 
 void loop(){
-Serial.println(menuLevel);
 menu();
+Serial.println(mode);
 
 menuUpState = digitalRead(butUp);
 if(menuUpState != menuUpLast){
@@ -137,6 +177,13 @@ if(menuDownState != menuDownLast){
 }
 menuDownLast = menuDownState;
 
-  
+menuOkState = digitalRead(butOk);
+if(menuOkState != menuOkLast){
+  if(menuOkState == HIGH){
+    lcd.clear();
+  }
+  delay(50);
+}
+menuOkLast = menuOkState;
 }
 // http://www.instructables.com/id/I2C-between-Arduinos/
